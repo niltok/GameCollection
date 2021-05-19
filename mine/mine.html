@@ -137,7 +137,8 @@
                     let partiel = template.replace("((x))", i).replace("((y))", j)
                     if (board[i][j].display) {
                         if (board[i][j].mine) row += partiel.replace("((content))", "💣")
-                        else row += partiel.replace("((content))", board[i][j].count)
+                        else if (board[i][j].count) row += partiel.replace("((content))", board[i][j].count)
+                        else row += partiel.replace("((content))", "")
                     } else row += partiel.replace("((content))", "?")
                 }
                 full += "<div>" + row + "</div>"
