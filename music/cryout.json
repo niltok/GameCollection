@@ -536,7 +536,7 @@
             "hold_tick": 0,
             "next_id": 0,
             "is_forward": false,
-            "pos": "A"
+            "pos": "K"
         },
         {
             "page_index": 7,
@@ -548,7 +548,7 @@
             "hold_tick": 0,
             "next_id": 0,
             "is_forward": false,
-            "pos": "K"
+            "pos": "W"
         },
         {
             "page_index": 7,
@@ -560,7 +560,7 @@
             "hold_tick": 0,
             "next_id": 0,
             "is_forward": false,
-            "pos": "I"
+            "pos": "S"
         },
         {
             "page_index": 8,
@@ -572,7 +572,7 @@
             "hold_tick": 0,
             "next_id": 0,
             "is_forward": false,
-            "pos": "W"
+            "pos": "K"
         },
         {
             "page_index": 8,
@@ -584,7 +584,7 @@
             "hold_tick": 0,
             "next_id": 0,
             "is_forward": false,
-            "pos": "L"
+            "pos": "I"
         },
         {
             "page_index": 9,

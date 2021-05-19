@@ -73,7 +73,7 @@
         #panel {
             height: 60%;
             max-height: 250px;
-            width: 70%;
+            width: 80%;
             max-width: 800px;
             display: flex;
             justify-content: space-between;
@@ -104,10 +104,16 @@
             transform: translate(-50%, -50%);
         }
 
+        .label {
+            font-weight: 900;
+            font-size: 2em;
+        }
+
         .scanner {
             border-radius: 50%;
             border-style: solid;
             border-color: #0B0E26;
+            border-width: 5px;
             height: 100%;
             width: 100%;
         }
@@ -115,7 +121,8 @@
         .circle {
             border-radius: 50%;
             border-style: solid;
-            border-color: #0B0E26;
+            border-width: 5px;
+            border-color: #e63946;
             z-index: -1;
         }
 
@@ -129,7 +136,20 @@
             left: 50%;
             transform: translate(-50%, -50%);
             transition-timing-function: ease-out;
-            transition-duration: 200ms;
+            transition-duration: 500ms;
+            font-weight: 900;
+            font-size: 1.5em;
+            color: #fb8500;
+        }
+
+        #bgimg {
+            opacity: 0.5;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            background-image: url("./cryout.jpg");
+            background-size: cover;
+            z-index: -2;
         }
 
         @media (orientation: landscape) {
@@ -149,7 +169,7 @@
                 color: #D8D8D6;
                 background: #0E0E10;
             }
-            .bordered, .scanner, .circle {
+            .bordered, .scanner {
                 border-color: #D8D8D6;
             }
         }
@@ -157,6 +177,7 @@
 </head>
 
 <body>
+    <div id="bgimg"></div>
     <div id="welcome">
         <h1>打🎶</h1>
         <div id="intro">
@@ -265,6 +286,7 @@
             if (!prepared) return
             document.getElementById("welcome").style.display = "none"
             document.getElementById("main").style.display = "flex"
+            document.documentElement.requestFullscreen()
             audio.play()
             setInterval(draw, 50)
         }
@@ -316,6 +338,7 @@
             }, 20)
         }
         function down(key) {
+            if (key === " ") start() 
             if (pressing[key]) return
             pressing[key] = true
             console.log("down", key, Math.floor(audio.currentTime * 1000), count)
@@ -326,10 +349,10 @@
                 let d = getTime(e.tick) - time
                 if (e.pos === key && Math.abs(d) < Math.abs(minD)) minD = d
             });
-            if (Math.abs(minD) < 50) showFeedback(key, "Perfect")
-            else if (Math.abs(minD) < 75) showFeedback(key, "Great")
-            else if (Math.abs(minD) < 100) showFeedback(key, "Good")
-            else if (Math.abs(minD) < 150) showFeedback(key, "Bad")
+            if (Math.abs(minD) < 70) showFeedback(key, "Perfect")
+            else if (Math.abs(minD) < 150) showFeedback(key, "Great")
+            else if (Math.abs(minD) < 300) showFeedback(key, "Good")
+            else if (Math.abs(minD) < 500) showFeedback(key, "Bad")
             else showFeedback(key, "Miss")
         }
         function up(key) {
