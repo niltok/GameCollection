@@ -1,0 +1,190 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>五子棋</title>
+    <style>
+        body {
+            max-width: 650px;
+            margin: auto;
+            width: 90%;
+            margin-top: 10%;
+            margin-bottom: 10%;
+            color: #0B0E26;
+            background: #FAFAFC;
+            line-height: 2em;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #EF96AB;
+            line-height: 1.5em;
+        }
+
+        h2 {
+            margin-top: 2em;
+            line-height: 1.5em;
+        }
+
+        a {
+            color: #02AEF1;
+            text-decoration: none;
+        }
+
+        .flex-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .flex-box > div {
+            display: flex;
+            flex-basis: 9%;
+            justify-content: center;
+        }
+
+        .flex-box > div > div {
+            flex-basis: 9%;
+            border-style: solid;
+            border-color: #0B0E26;
+            border-width: 1px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .template {
+            display: none;
+        }
+
+        .box0 {
+            display: none;
+        }
+
+        .box1, .box2 {
+            height: 50%;
+            width: 50%;
+            border-style: solid;
+            border-radius: 50%;
+            border-color: #0B0E26;
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .box2 {
+                background-color: #0B0E26;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #D8D8D6;
+                background: #0E0E10;
+            }
+
+            .flex-box > div > div {
+                border-color: #D8D8D6;
+            }
+
+            .box1, .box2 {
+                border-color: #D8D8D6;
+            }
+
+            .box1 {
+                background-color: #D8D8D6;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .flex-box > div > div {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 425px) {
+            .flex-box > div > div {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+
+<body onresize="draw()">
+    <h1 onclick="draw()">五子棋</h1>
+    <div style="display: flex;align-items: center;">
+        <div id="player" style="height: 1em;width: 1em;"></div>
+        <div id="label">下</div>
+    </div>
+    <div class="flex-box" id="main">
+    </div>
+    <div class="template" id="box">
+        <div onclick="test(((x)), ((y)))" class="((class))">
+            <div class="box((content))"></div>
+        </div>
+    </div>
+    <script>
+        let play = true 
+        let player = 1
+        let board = []
+        for (let i = 0; i < 15; i++) {
+            let row = []
+            for (let i = 0; i < 15; i++) row.push(0)
+            board.push(row)
+        }
+        let main = document.getElementById("main")
+        function draw() {
+            document.getElementById("label").innerText = play ? "下" : "赢了"
+            document.getElementById("player").className = "box" + player
+            let template = document.getElementById("box").innerHTML
+            let full = ""
+            let count = 0
+            for (let i = 0; i < 15; i++) {
+                let row = ""
+                for (let j = 0; j < 15; j++) {
+                    let partiel = template.replace("((x))", i).replace("((y))", j)
+                    if (play) partiel = partiel.replace("((class))", "pointer")
+                    else partiel = partiel.replace("((class))", "")
+                    row += partiel.replace("((content))", board[i][j])
+                }
+                full += "<div>" + row + "</div>"
+            }
+            main.innerHTML = full
+            main.style.height = main.clientWidth
+        }
+        draw()
+        function check(x, y) {
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue
+                    let flag = true
+                    for (let k = 1; k < 5; k++) {
+                        if (x + i * k < 0 || 14 < x + i * k || 
+                            y + j * k < 0 || 14 < y + j * k || 
+                            board[x][y] != board[x + i * k][y + j * k]) flag = false
+                    }
+                    if (flag) return true
+                }
+            }
+            return false
+        }
+        function test(x, y) {
+            if (!play) return
+            if (board[x][y]) return
+            board[x][y] = player 
+            for (let i = 0; i < 15; i++) {
+                for (let j = 0; j < 15; j++) 
+                    if (board[i][j] !== 0 &&check(i, j)) play = false
+            }
+            if (play) player = 3 - player
+            draw()
+        }
+    </script>
+</body>
+
+</html>
