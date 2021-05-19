@@ -60,6 +60,10 @@
             display: none;
         }
 
+        .pointer {
+            cursor: pointer;
+        }
+
         @media (prefers-color-scheme: dark) {
             body {
                 color: #D8D8D6;
@@ -90,7 +94,7 @@
     <div class="flex-box" id="main">
     </div>
     <div class="template" id="box">
-        <div onclick="test(((x)), ((y))); draw()">
+        <div onclick="test(((x)), ((y))); draw()" class="((class))">
             <div>((content))</div>
         </div>
     </div>
@@ -135,6 +139,8 @@
                 for (let j = 0; j < 10; j++) {
                     if (!board[i][j].display && !board[i][j].mine) count++
                     let partiel = template.replace("((x))", i).replace("((y))", j)
+                    if (play) partiel = partiel.replace("((class))", "pointer")
+                    else partiel = partiel.replace("((class))", "")
                     if (board[i][j].display) {
                         if (board[i][j].mine) row += partiel.replace("((content))", "💣")
                         else if (board[i][j].count) row += partiel.replace("((content))", board[i][j].count)
