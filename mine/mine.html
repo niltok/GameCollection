@@ -129,9 +129,11 @@
         function draw() {
             let template = document.getElementById("box").innerHTML
             let full = ""
+            let count = 0
             for (let i = 0; i < 10; i++) {
                 let row = ""
                 for (let j = 0; j < 10; j++) {
+                    if (!board[i][j].display && !board[i][j].mine) count++
                     let partiel = template.replace("((x))", i).replace("((y))", j)
                     if (board[i][j].display) {
                         if (board[i][j].mine) row += partiel.replace("((content))", "💣")
@@ -142,6 +144,10 @@
             }
             main.innerHTML = full
             main.style.height = main.clientWidth
+            if (count === 0) {
+                setTimeout(() => { alert("扫雷大师！") }, 100)
+                play = false
+            }
         }
         draw()
         function test(x, y) {
