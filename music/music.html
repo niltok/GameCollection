@@ -108,18 +108,28 @@
             border-radius: 50%;
             border-style: solid;
             border-color: #0B0E26;
-            height: 50%;
-            width: 50%;
+            height: 100%;
+            width: 100%;
         }
 
         .circle {
             border-radius: 50%;
             border-style: solid;
             border-color: #0B0E26;
+            z-index: -1;
         }
 
         .template {
             display: none;
+        }
+        
+        .feedback {
+            position: absolute;
+            top: -30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition-timing-function: ease-out;
+            transition-duration: 200ms;
         }
 
         @media (orientation: landscape) {
@@ -167,6 +177,7 @@
                         <div class="label">W</div>
                         <div class="scanner"></div>
                         <div id="circleW"></div>
+                        <div id="feedbackW" class="feedback"></div>
                     </div>
                     <div></div>
                 </div>
@@ -175,12 +186,14 @@
                         <div class="label">A</div>
                         <div class="scanner"></div>
                         <div id="circleA"></div>
+                        <div id="feedbackA" class="feedback"></div>
                     </div>
                     <div></div>
                     <div id="D">
                         <div class="label">D</div>
                         <div class="scanner"></div>
                         <div id="circleD"></div>
+                        <div id="feedbackD" class="feedback"></div>
                     </div>
                 </div>
                 <div>
@@ -189,6 +202,7 @@
                         <div class="label">S</div>
                         <div class="scanner"></div>
                         <div id="circleS"></div>
+                        <div id="feedbackS" class="feedback"></div>
                     </div>
                     <div></div>
                 </div>
@@ -200,6 +214,7 @@
                         <div class="label">I</div>
                         <div class="scanner"></div>
                         <div id="circleI"></div>
+                        <div id="feedbackI" class="feedback"></div>
                     </div>
                     <div></div>
                 </div>
@@ -208,12 +223,14 @@
                         <div class="label">J</div>
                         <div class="scanner"></div>
                         <div id="circleJ"></div>
+                        <div id="feedbackJ" class="feedback"></div>
                     </div>
                     <div></div>
                     <div id="L">
                         <div class="label">L</div>
                         <div class="scanner"></div>
                         <div id="circleL"></div>
+                        <div id="feedbackL" class="feedback"></div>
                     </div>
                 </div>
                 <div>
@@ -222,6 +239,7 @@
                         <div class="label">K</div>
                         <div class="scanner"></div>
                         <div id="circleK"></div>
+                        <div id="feedbackK" class="feedback"></div>
                     </div>
                     <div></div>
                 </div>
@@ -229,9 +247,6 @@
         </div>
     </div>
     <audio id="audio"></audio>
-    <div class="template" id="circle">
-        <div class="circle"></div>
-    </div>
     <script>
         let audio = document.getElementById("audio")
         let data = []
@@ -254,6 +269,9 @@
             setInterval(draw, 50)
         }
         let char_list = ['W', 'A', 'D', 'S', 'I', 'J', 'L', 'K']
+        function getTime(tick) {
+            return tick /480 / 3 * 1000
+        }
         function draw() {
             let time = audio.currentTime
             document.getElementById("timer").innerHTML = 
@@ -267,13 +285,14 @@
             })
 
             data.forEach(v => {
-                let delta = v.tick / 480 / 3 * 1000 - time * 1000
-                if (0 < delta && delta < 1000) {
+                let delta = getTime(v.tick) - time * 1000
+                if (0 < delta && delta < 1500) {
                     let elem = document.createElement('div')
                     document.getElementById("circle" + v.pos).appendChild(elem)
-                    let size = (delta / 1000 * 70 + 50) + "%"
+                    let size = (delta / 1500 * 100 + 100) + "%"
                     elem.style.height = size
                     elem.style.width = size
+                    elem.style.opacity = 1 - delta / 1500
                     elem.className = "circle"
                 }
             })
@@ -284,15 +303,41 @@
             elem.addEventListener("touchend", e => up(v), { passive: true })
         })
         let count = 0
+        let pressing = {}
+        function showFeedback(key, str) {
+            let elem = document.getElementById("feedback" + key)
+            if (elem === null) return
+            elem.style.display = "none"
+            setTimeout(() => {
+                elem.style.opacity = 1
+                elem.innerHTML = str
+                elem.style.display = "block"
+                setTimeout(() => {elem.style.opacity = 0}, 20)
+            }, 20)
+        }
         function down(key) {
+            if (pressing[key]) return
+            pressing[key] = true
             console.log("down", key, Math.floor(audio.currentTime * 1000), count)
             count++
+            let time = audio.currentTime * 1000
+            let minD = -1e9
+            data.forEach(e => {
+                let d = getTime(e.tick) - time
+                if (e.pos === key && Math.abs(d) < Math.abs(minD)) minD = d
+            });
+            if (Math.abs(minD) < 50) showFeedback(key, "Perfect")
+            else if (Math.abs(minD) < 75) showFeedback(key, "Great")
+            else if (Math.abs(minD) < 100) showFeedback(key, "Good")
+            else if (Math.abs(minD) < 150) showFeedback(key, "Bad")
+            else showFeedback(key, "Miss")
         }
         function up(key) {
             console.log("up", key)
+            pressing[key] = false
         }
-        document.onkeydown = e => down(e.key)
-        document.onkeyup = e => up(e.key)
+        document.onkeydown = e => down(e.key.toUpperCase())
+        document.onkeyup = e => up(e.key.toUpperCase())
     </script>
 </body>
 
