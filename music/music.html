@@ -1,0 +1,299 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>音游</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            margin: 0;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            color: #0B0E26;
+            background: #FAFAFC;
+            line-height: 2em;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #EF96AB;
+            line-height: 1.5em;
+        }
+
+        h2 {
+            margin-top: 2em;
+            line-height: 1.5em;
+        }
+
+        a {
+            color: #02AEF1;
+            text-decoration: none;
+        }
+
+        #welcome {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #start {
+            padding: 5px 10px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .bordered {
+            border-style: solid;
+            border-color: #0B0E26;
+        }
+
+        #main {
+            display: none;
+            height: 100%;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #timer { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 1em 2em;
+        }
+
+        #panel {
+            height: 60%;
+            max-height: 250px;
+            width: 70%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #left, #right {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        #left > div, #right > div {
+            flex-basis: 30%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #left > div > div, #right > div > div {
+            flex-basis: 30%;
+            position: relative;
+        }
+
+        .scanner, .label, .circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .scanner {
+            border-radius: 50%;
+            border-style: solid;
+            border-color: #0B0E26;
+            height: 50%;
+            width: 50%;
+        }
+
+        .circle {
+            border-radius: 50%;
+            border-style: solid;
+            border-color: #0B0E26;
+        }
+
+        .template {
+            display: none;
+        }
+
+        @media (orientation: landscape) {
+            #rotate {
+                display: none;
+            }
+        }
+
+        @media (orientation: portrait) {
+            #start {
+                display: none;
+            }
+        } 
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #D8D8D6;
+                background: #0E0E10;
+            }
+            .bordered, .scanner, .circle {
+                border-color: #D8D8D6;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="welcome">
+        <h1>打🎶</h1>
+        <div id="intro">
+            <div></div>
+            <div></div>
+        </div>
+        <p id="rotate">请旋转屏幕</p>
+        <div id="start" onclick="start()">加载中</div>
+    </div>
+    <div id="main">
+        <div id="timer"></div>
+        <div id="effact"></div>
+        <div id="panel">
+            <div id="left">
+                <div>
+                    <div></div>
+                    <div id="W">
+                        <div class="label">W</div>
+                        <div class="scanner"></div>
+                        <div id="circleW"></div>
+                    </div>
+                    <div></div>
+                </div>
+                <div>
+                    <div id="A">
+                        <div class="label">A</div>
+                        <div class="scanner"></div>
+                        <div id="circleA"></div>
+                    </div>
+                    <div></div>
+                    <div id="D">
+                        <div class="label">D</div>
+                        <div class="scanner"></div>
+                        <div id="circleD"></div>
+                    </div>
+                </div>
+                <div>
+                    <div></div>
+                    <div id="S">
+                        <div class="label">S</div>
+                        <div class="scanner"></div>
+                        <div id="circleS"></div>
+                    </div>
+                    <div></div>
+                </div>
+            </div>
+            <div id="right">
+                <div>
+                    <div></div>
+                    <div id="I">
+                        <div class="label">I</div>
+                        <div class="scanner"></div>
+                        <div id="circleI"></div>
+                    </div>
+                    <div></div>
+                </div>
+                <div>
+                    <div id="J">
+                        <div class="label">J</div>
+                        <div class="scanner"></div>
+                        <div id="circleJ"></div>
+                    </div>
+                    <div></div>
+                    <div id="L">
+                        <div class="label">L</div>
+                        <div class="scanner"></div>
+                        <div id="circleL"></div>
+                    </div>
+                </div>
+                <div>
+                    <div></div>
+                    <div id="K">
+                        <div class="label">K</div>
+                        <div class="scanner"></div>
+                        <div id="circleK"></div>
+                    </div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <audio id="audio"></audio>
+    <div class="template" id="circle">
+        <div class="circle"></div>
+    </div>
+    <script>
+        let audio = document.getElementById("audio")
+        let data = []
+        let prepared = false;
+        (async () => {
+            let blob = await (await fetch("./cryout.mp3")).blob()
+            audio.src = URL.createObjectURL(blob)
+            data = (await (await fetch("./cryout.json")).json()).note_list
+            let start = document.getElementById("start")
+            start.innerHTML = "开始"
+            start.className = "bordered"
+            start.style.cursor = "pointer"
+            prepared = true
+        })()
+        function start() {
+            if (!prepared) return
+            document.getElementById("welcome").style.display = "none"
+            document.getElementById("main").style.display = "flex"
+            audio.play()
+            setInterval(draw, 50)
+        }
+        let char_list = ['W', 'A', 'D', 'S', 'I', 'J', 'L', 'K']
+        function draw() {
+            let time = audio.currentTime
+            document.getElementById("timer").innerHTML = 
+                Math.floor(time / 60) + ":" + Math.floor(time) % 60 + "." + Math.floor(time * 1000) % 1000
+            let panel = document.getElementById("panel")
+            document.getElementById("left").style.width = panel.clientHeight
+            document.getElementById("right").style.width = panel.clientHeight
+
+            char_list.forEach(v => {
+                document.getElementById("circle" + v).innerHTML = ""
+            })
+
+            data.forEach(v => {
+                let delta = v.tick / 480 / 3 * 1000 - time * 1000
+                if (0 < delta && delta < 1000) {
+                    let elem = document.createElement('div')
+                    document.getElementById("circle" + v.pos).appendChild(elem)
+                    let size = (delta / 1000 * 70 + 50) + "%"
+                    elem.style.height = size
+                    elem.style.width = size
+                    elem.className = "circle"
+                }
+            })
+        }
+        char_list.forEach(v => {
+            let elem = document.getElementById(v)
+            elem.addEventListener("touchstart", e => down(v), { passive: true })
+            elem.addEventListener("touchend", e => up(v), { passive: true })
+        })
+        let count = 0
+        function down(key) {
+            console.log("down", key, Math.floor(audio.currentTime * 1000), count)
+            count++
+        }
+        function up(key) {
+            console.log("up", key)
+        }
+        document.onkeydown = e => down(e.key)
+        document.onkeyup = e => up(e.key)
+    </script>
+</body>
+
+</html>

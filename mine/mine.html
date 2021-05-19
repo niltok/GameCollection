@@ -1,0 +1,165 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>扫雷</title>
+    <style>
+        body {
+            max-width: 650px;
+            margin: auto;
+            width: 90%;
+            margin-top: 10%;
+            margin-bottom: 10%;
+            color: #0B0E26;
+            background: #FAFAFC;
+            line-height: 2em;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #EF96AB;
+            line-height: 1.5em;
+        }
+
+        h2 {
+            margin-top: 2em;
+            line-height: 1.5em;
+        }
+
+        a {
+            color: #02AEF1;
+            text-decoration: none;
+        }
+
+        .flex-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .flex-box > div {
+            display: flex;
+            flex-basis: 9%;
+            justify-content: center;
+        }
+
+        .flex-box > div > div {
+            flex-basis: 9%;
+            border-style: solid;
+            border-color: #0B0E26;
+            border-width: 1px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .template {
+            display: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #D8D8D6;
+                background: #0E0E10;
+            }
+
+            .flex-box > div > div {
+                border-color: #D8D8D6;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .flex-box > div > div {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 425px) {
+            .flex-box > div > div {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+
+<body onresize="draw()">
+    <h1 onclick="draw()">扫💣</h1>
+    <div class="flex-box" id="main">
+    </div>
+    <div class="template" id="box">
+        <div onclick="test(((x)), ((y))); draw()">
+            <div>((content))</div>
+        </div>
+    </div>
+    <script>
+        let play = true 
+        let board = []
+        for (let i = 0; i < 10; i++) {
+            let row = []
+            for (let i = 0; i < 10; i++) row.push({
+                display: false,
+                mine: 0,
+                count: 0
+            })
+            board.push(row)
+        }
+        for (let i = 0; i < 10; i++) {
+            while (true) {
+                x = Math.floor(Math.random() * 10)
+                y = Math.floor(Math.random() * 10)
+                if (board[x][y].mine) continue
+                board[x][y].mine = 1
+                break
+            }
+        }
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                for (let x = -1; x <= 1; x++) {
+                    for (let y = -1; y <= 1; y++) {
+                        if (i + x < 0 || 9 < i + x || j + y < 0 || 9 < j + y) continue
+                        board[i][j].count += board[i + x][j + y].mine
+                    }
+                }
+            }
+        }
+        let main = document.getElementById("main")
+        function draw() {
+            let template = document.getElementById("box").innerHTML
+            let full = ""
+            for (let i = 0; i < 10; i++) {
+                let row = ""
+                for (let j = 0; j < 10; j++) {
+                    let partiel = template.replace("((x))", i).replace("((y))", j)
+                    if (board[i][j].display) {
+                        if (board[i][j].mine) row += partiel.replace("((content))", "💣")
+                        else row += partiel.replace("((content))", board[i][j].count)
+                    } else row += partiel.replace("((content))", "?")
+                }
+                full += "<div>" + row + "</div>"
+            }
+            main.innerHTML = full
+            main.style.height = main.clientWidth
+        }
+        draw()
+        function test(x, y) {
+            if (!play || x < 0 || 9 < x || y < 0 || 9 < y || board[x][y].display) return 
+            board[x][y].display = true
+            if (board[x][y].count) {
+                if (board[x][y].mine) {
+                    setTimeout(() => { alert("Booooom!!") }, 100)
+                    play = false 
+                }
+                return
+            }
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++)
+                    test(x + i, y + j);
+            }
+        }
+    </script>
+</body>
+
+</html>

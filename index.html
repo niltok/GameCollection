@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>小游戏</title>
+    <style>
+        body {
+            max-width: 650px;
+            margin: auto;
+            width: 90%;
+            margin-top: 10%;
+            margin-bottom: 10%;
+            color: #0B0E26;
+            background: #FAFAFC;
+            line-height: 2em;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #EF96AB;
+            line-height: 1.5em;
+        }
+
+        h2 {
+            margin-top: 2em;
+            line-height: 1.5em;
+        }
+
+        a {
+            color: #02AEF1;
+            text-decoration: none;
+        }
+
+        .flex-box {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .flex-box>a {
+            flex-basis: 33%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .icon {
+            font-size: 4em;
+            margin-bottom: 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #D8D8D6;
+                background: #0E0E10;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .flex-box>a {
+                flex-basis: 50%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex-box">
+        <a href="./mine/mine.html">
+            <p class="icon">💣</p>
+            <h2>扫雷</h2>
+        </a>
+        <a href="./plane/plane.html">
+            <p class="icon">✈</p>
+            <h2>打飞机</h2>
+        </a>
+        <a href="./music/music.html">
+            <p class="icon">🎶</p>
+            <h2>音游</h2>
+        </a>
+        <a href="./chess/chess.html">
+            <p class="icon">♟</p>
+            <h2>五子棋</h2>
+        </a>
+        <a href="./snake/snake.html">
+            <p class="icon">🐍</p>
+            <h2>贪吃蛇</h2>
+        </a>
+        <a href="./defend/defend.html">
+            <p class="icon">🛡</p>
+            <h2>塔防</h2>
+        </a>
+    </div>
+</body>
+
+</html>
