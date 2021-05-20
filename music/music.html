@@ -312,8 +312,8 @@
             document.getElementById("timer").innerHTML = 
                 Math.floor(time / 60) + ":" + Math.floor(time) % 60 + "." + Math.floor(time * 1000) % 1000
             let panel = document.getElementById("panel")
-            document.getElementById("left").style.width = panel.clientHeight
-            document.getElementById("right").style.width = panel.clientHeight
+            document.getElementById("left").style.width = panel.clientHeight + "px"
+            document.getElementById("right").style.width = panel.clientHeight + "px"
 
             char_list.forEach(v => {
                 document.getElementById("circle" + v).innerHTML = ""
