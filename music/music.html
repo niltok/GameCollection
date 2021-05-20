@@ -299,7 +299,11 @@
             if (!prepared) return
             document.getElementById("welcome").style.display = "none"
             document.getElementById("main").style.display = "flex"
-            document.documentElement.requestFullscreen()
+            draw()
+            if (document.documentElement.requestFullscreen) 
+                document.documentElement.requestFullscreen()
+            else if (document.documentElement.webkitRequestFullscreen) 
+                document.documentElement.webkitRequestFullscreen()
             audio.play()
             setInterval(draw, 50)
         }
