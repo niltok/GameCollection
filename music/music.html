@@ -283,6 +283,7 @@
         let audio = document.getElementById("audio")
         let data = []
         let score = {}
+        let showTime = 1000
         let prepared = false;
         (async () => {
             let blob = await (await fetch("./cryout.mp3")).blob()
@@ -322,16 +323,16 @@
 
             data.forEach(v => {
                 let delta = getTime(v.tick) - time * 1000
-                if (0 < delta && delta < 1500) {
+                if (0 < delta && delta < showTime && v.click === undefined) {
                     let elem = document.createElement('div')
                     document.getElementById("circle" + v.pos).appendChild(elem)
-                    let size = (delta / 1500 * 100 + 100) + "%"
+                    let size = (delta / showTime * 175 + 100) + "%"
                     elem.style.height = size
                     elem.style.width = size
-                    elem.style.opacity = 1 - delta / 1500
+                    elem.style.opacity = 1 - delta / showTime
                     elem.className = "circle"
                 }
-                if (delta < -1500 && v.click === undefined)
+                if (delta < -500 && v.click === undefined)
                     missCount++
             })
             function or0(x) {
@@ -381,7 +382,7 @@
                 }
             });
             console.log("Delta", minD)
-            if (Math.abs(minD) > 1500) return
+            if (Math.abs(minD) > showTime) return
             pos.click = true
             if (Math.abs(minD) < 70) showFeedback(key, "Perfect")
             else if (Math.abs(minD) < 150) showFeedback(key, "Great")

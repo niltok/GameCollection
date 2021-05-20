@@ -1,3 +1,3 @@
 Homework for web development class of QUST
 
-[demo link](game.huohuo.moe)
+[demo link](https://game.huohuo.moe)
