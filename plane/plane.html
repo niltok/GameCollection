@@ -1,0 +1,188 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>打飞机</title>
+    <style>
+        body {
+            margin: 0;
+            width: 100%;
+            color: #0B0E26;
+            background: #FAFAFC;
+            line-height: 2em;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #EF96AB;
+            line-height: 1.5em;
+        }
+
+        h2 {
+            margin-top: 2em;
+            line-height: 1.5em;
+        }
+
+        a {
+            color: #02AEF1;
+            text-decoration: none;
+        }
+
+        #main {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        #label {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+            margin: 1em 0;
+        }
+
+        #plane {
+            color: #e63946;
+        }
+
+        #plane, .snow {
+            position: absolute;
+            transform: translate(-50%, -50%) rotate(-90deg);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #D8D8D6;
+                background: #0E0E10;
+            }
+        }
+    </style>
+</head>
+
+<body onresize="draw()">
+    <div id="main">
+        <div id="label"></div>
+        <div id="plane">✈</div>
+        <div id="snows"></div>
+    </div>
+    <script>
+        let pointEq = px => py => px.x === py.x && px.y === py.y
+        let play = true 
+        let pos = {
+            x: document.documentElement.clientWidth * 0.5, 
+            y: document.documentElement.clientHeight * 0.8
+        }
+        let snow = [{
+            x: document.documentElement.clientWidth * Math.random(),
+            y: 0,
+            dx: 0,
+            dy: 3
+        }]
+        setInterval(() => {
+            if (!play || snow.length === 10000) return
+            snow.push({
+                x: document.documentElement.clientWidth * Math.random(),
+                y: 0,
+                dx: 0,
+                dy: 3
+            })
+        }, 300)
+        let domCount = 0
+        let main = document.getElementById("main")
+        function draw() {
+            if (!play) return
+            document.getElementById("label").innerHTML = "Difficulty: " + snow.length
+            let force = p => v => (v + p) % p
+            pos.x = force(document.documentElement.clientWidth)(pos.x)
+            pos.y = force(document.documentElement.clientHeight)(pos.y)
+            let plane = document.getElementById("plane")
+            plane.style.left = pos.x + "px"
+            plane.style.top = pos.y + "px"
+            let sq = x => x * x * x
+            snow.forEach(p => {
+                p.x += p.dx
+                p.y += p.dy
+                p.dx += (Math.random() * 5) - 2.5
+                p.dy += (Math.random() * 7) - 2.5
+                p.dx *= 1 - sq(Math.random())
+                p.dy *= 1 - sq(Math.random())
+            })
+            snow.forEach(p => {
+                p.x = force(document.documentElement.clientWidth)(p.x)
+                p.y = force(document.documentElement.clientHeight)(p.y)
+            })
+            while (domCount < snow.length) {
+                let elem = document.getElementById("snows").insertAdjacentElement('beforeend', 
+                    document.createElement('div'))
+                elem.id = "snow" + domCount
+                elem.className = "snow"
+                elem.innerHTML = "❄"
+                domCount++
+            }
+            snow.forEach((p, i) => {
+                let elem = document.getElementById("snow" + i)
+                elem.style.left = p.x + "px"
+                elem.style.top = p.y + "px"
+            })
+            let dist = p1 => p2 => Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y))
+            snow.forEach(p => {
+                if (dist(p)(pos) < 10) play = false 
+            })
+        }
+        draw()
+        setInterval(draw, 50)
+        let turn = k => {
+            console.log(k)
+            if (!play) return
+            let delta = 10
+            switch (k) {
+                case "w":
+                    pos.y -= delta
+                    break 
+                case "W": 
+                    pos.y -= delta / 2
+                    break
+                case "s":
+                    pos.y += delta
+                    break
+                case "S": 
+                    pos.y += delta / 2
+                    break
+                case "a": 
+                    pos.x -= delta
+                    break
+                case "A": 
+                    pos.x -= delta / 2
+                    break
+                case "d":
+                    pos.x += delta
+                    break
+                case "D": 
+                    pos.x += delta / 2
+            }
+        }
+        document.onkeypress = e => turn(e.key)
+        let tx = 0, ty = 0
+        document.ontouchstart = e => {
+            if (!play) return
+            tx = e.changedTouches[0].clientX
+            ty = e.changedTouches[0].clientY
+        }
+        window.addEventListener('touchmove', e => {
+            e.preventDefault()
+            if (!play) return
+            let dx = e.changedTouches[0].clientX - tx
+            let dy = e.changedTouches[0].clientY - ty
+            pos.x += dx 
+            pos.y += dy
+            tx = e.changedTouches[0].clientX
+            ty = e.changedTouches[0].clientY
+        }, { passive: false })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,179 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>贪吃蛇</title>
+    <style>
+        body {
+            max-width: 650px;
+            margin: auto;
+            width: 90%;
+            margin-top: 10%;
+            margin-bottom: 10%;
+            color: #0B0E26;
+            background: #FAFAFC;
+            line-height: 2em;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #EF96AB;
+            line-height: 1.5em;
+        }
+
+        h2 {
+            margin-top: 2em;
+            line-height: 1.5em;
+        }
+
+        a {
+            color: #02AEF1;
+            text-decoration: none;
+        }
+
+        .flex-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-style: solid;
+            border-color: #0B0E26;
+        }
+
+        .flex-box > div {
+            display: flex;
+            flex-basis: 9%;
+            justify-content: center;
+        }
+
+        .flex-box > div > div {
+            flex-basis: 9%;
+        }
+
+        .head {
+            background-color: #e63946;
+        }
+
+        .food {
+            background-color: #fb8500;
+        }
+
+        .tail {
+            background-color: #0B0E26;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #D8D8D6;
+                background: #0E0E10;
+            }
+
+            .flex-box {
+                border-color: #D8D8D6;
+            }
+
+            .tail {
+                background-color: #d8d8d8;
+            }
+        }
+    </style>
+</head>
+
+<body onresize="draw()">
+    <h1 onclick="draw()">贪吃🐍</h1>
+    <div class="flex-box" id="main">
+    </div>
+    <script>
+        let pointEq = px => py => px.x === py.x && px.y === py.y
+        let play = true 
+        let snake = [{x: 25, y: 25}]
+        let direction = {x: 0, y: 1}
+        function genFood() {
+            let rand = r => Math.floor(Math.random() * r)
+            let randP = () => ({x: rand(50), y: rand(50)})
+            let f = randP()
+            while (snake.some(pointEq(f)))
+                f = randP()
+            return f
+        }
+        let main = document.getElementById("main")
+        full = ""
+        for (let i = 0; i < 50; i++) {
+            let row = ""
+            for (let j = 0; j < 50; j++) {
+                row += `<div id="p(${i},${j})"></div>`
+            }
+            full += "<div>" + row + "</div>"
+        }
+        main.innerHTML = full
+        let food = genFood()
+        function draw() {
+            let head = snake[snake.length - 1]
+            for (let i = 0; i < 50; i++) {
+                for (let j = 0; j < 50; j++) {
+                    let eq = pointEq({x: i, y: j})
+                    let classes = ""
+                    if (eq(head)) classes = "head"
+                    else if (snake.some(eq)) classes = "tail"
+                    else if (eq(food)) classes = "food"
+                    document.getElementById(`p(${i},${j})`).className = classes
+                }
+            }
+            main.style.height = main.clientWidth
+        }
+        draw()
+        setInterval(draw, 50)
+        function move() {
+            let force = p => v => (v + p) % p
+            let head = snake[snake.length - 1]
+            let next = {x: force(50)(head.x + direction.x), y: force(50)(head.y + direction.y)}
+            if (snake.some(pointEq(next))) {
+                play = false
+                return
+            }
+            snake.push(next)
+            if (pointEq(next)(food)) food = genFood()
+            else snake.shift()
+        }
+        setInterval(move, 300)
+        let turn = k => {
+            console.log(k)
+            let md = {x: 0, y: 0}
+            switch (k) {
+                case "w":
+                    md = {x: -1, y: 0}
+                    break 
+                case "s":
+                    md = {x: 1, y: 0}
+                    break
+                case "a": 
+                    md = {x: 0, y: -1}
+                    break
+                case "d":
+                    md = {x: 0, y: 1}
+            }
+            if (md.x === 0 && md.y === 0 || 
+                md.x + direction.x === 0 && md.y + direction.y === 0) 
+                return 
+            direction = md
+        }
+        document.onkeypress = e => turn(e.key)
+        let tx = 0, ty = 0
+        document.ontouchstart = e => {
+            tx = e.touches[0].clientX
+            ty = e.touches[0].clientY
+        }
+        window.addEventListener('touchmove', e => e.preventDefault(), { passive: false })
+        document.ontouchend = e => {
+            let dx = e.changedTouches[0].clientX - tx
+            let dy = e.changedTouches[0].clientY - ty
+            if (dx + dy > 0 && dx - dy < 0) turn("s")
+            if (dx + dy > 0 && dx - dy > 0) turn("d")
+            if (dx + dy < 0 && dx - dy > 0) turn("w")
+            if (dx + dy < 0 && dx - dy < 0) turn("a")
+        }
+    </script>
+</body>
+
+</html>
