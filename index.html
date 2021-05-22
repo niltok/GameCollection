@@ -33,23 +33,45 @@
             text-decoration: none;
         }
 
-        .flex-box {
-            width: 100%;
+        #box {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            align-items: center;
+            justify-content: space-between;
+            height: 50%;
         }
 
-        .flex-box>a {
-            flex-basis: 33%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        #box > a {
+            justify-content: center;
+            align-items: flex-end;
+            width: 80%;
+            height: 100%;
+            border-radius: 1em;
+            background-size: cover;
+            background-position: center;
+        }
+
+        #box > a > div {
+            transform: translate(0, 150%);
+            font-size: 1.5em;
         }
 
         .icon {
             font-size: 4em;
             margin-bottom: 0;
+        }
+
+        img {
+            width: 80%;
+            border-radius: 1em;
+        }
+
+        #left, #right {
+            width: 5%;
+            cursor: pointer;
+            background-color: #6c757d80;
+            text-align: center;
+            padding: 0.5em;
+            border-radius: 0.5em;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -58,42 +80,56 @@
                 background: #0E0E10;
             }
         }
-
-        @media (max-width: 500px) {
-            .flex-box>a {
-                flex-basis: 50%;
-            }
-        }
     </style>
 </head>
 
 <body>
-    <div class="flex-box">
-        <a href="./mine/mine.html">
-            <p class="icon">💣</p>
-            <h2>扫雷</h2>
+    <div id="box">
+        <div id="left">&leftarrow;</div>
+        <a href="./mine/mine.html" style="background-image: url(./mine/mine.jpg);">
+            <div>扫雷</div>
         </a>
-        <a href="./plane/plane.html">
-            <p class="icon">✈</p>
-            <h2>打飞机</h2>
+        <a href="./plane/plane.html" style="background-image: url(./plane/plane.png);">
+            <div>打飞机</div>
         </a>
-        <a href="./music/music.html">
-            <p class="icon">🎶</p>
-            <h2>音游</h2>
+        <a href="./music/music.html" style="background-image: url(./music/cryout.jpg);">
+            <div>音游</div>
         </a>
-        <a href="./chess/chess.html">
-            <p class="icon">♟</p>
-            <h2>五子棋</h2>
+        <a href="./chess/chess.html" style="background-image: url(./chess/chess.png);">
+            <div>五子棋</div>
         </a>
-        <a href="./snake/snake.html">
-            <p class="icon">🐍</p>
-            <h2>贪吃蛇</h2>
+        <a href="./snake/snake.html" style="background-image: url(./snake/snake.jpg);">
+            <div>贪吃蛇</div>
         </a>
-        <a href="./defend/defend.html">
-            <p class="icon">🛡</p>
-            <h2>塔防</h2>
-        </a>
+        <div id="right">&rightarrow;</div>
     </div>
+    <script>
+        let index = 0
+        let imgBox = document.querySelectorAll("#box > a")
+        let len = imgBox.length
+
+        function slideShow() {
+            index = (index + len) % len
+
+            for (let i = 0; i < len; i++) {
+                imgBox[i].style.display = 'none'
+            }
+            imgBox[index].style.display = 'flex'
+        }
+        slideShow()
+        setInterval(() => {
+            index++
+            slideShow()
+        }, 5000);
+        document.getElementById("left").onclick = e => {
+            index--
+            slideShow()
+        }
+        document.getElementById("right").onclick = e => {
+            index++
+            slideShow()
+        }
+    </script>
 </body>
 
 </html>
