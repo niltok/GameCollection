@@ -20,41 +20,41 @@
             line-height: 2em;
             font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
         }
-
+        
         h1 {
             font-size: 2.5em;
             color: #EF96AB;
             line-height: 1.5em;
         }
-
+        
         h2 {
             margin-top: 2em;
             line-height: 1.5em;
         }
-
+        
         a {
             color: #02AEF1;
             text-decoration: none;
         }
-
+        
         #welcome {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
         }
-
+        
         #start {
             padding: 5px 10px;
             margin: 10px;
             cursor: pointer;
         }
-
+        
         .bordered {
             border-style: solid;
             border-color: #0B0E26;
         }
-
+        
         #main {
             display: none;
             height: 100%;
@@ -62,14 +62,14 @@
             align-items: center;
             justify-content: center;
         }
-
-        #timer { 
+        
+        #timer {
             position: absolute;
             top: 0;
             left: 0;
             margin: 1em 2em;
         }
-
+        
         #score {
             position: absolute;
             top: 0;
@@ -78,7 +78,7 @@
             margin: 1em 0;
             font-weight: 900;
         }
-
+        
         #panel {
             height: 60%;
             max-height: 250px;
@@ -87,37 +87,42 @@
             display: flex;
             justify-content: space-between;
         }
-
-        #left, #right {
+        
+        #left,
+        #right {
             display: flex;
             justify-content: space-between;
             flex-direction: column;
             height: 100%;
         }
         
-        #left > div, #right > div {
+        #left>div,
+        #right>div {
             flex-basis: 30%;
             display: flex;
             justify-content: space-between;
         }
-
-        #left > div > div, #right > div > div {
+        
+        #left>div>div,
+        #right>div>div {
             flex-basis: 30%;
             position: relative;
         }
-
-        .scanner, .label, .circle {
+        
+        .scanner,
+        .label,
+        .circle {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
-
+        
         .label {
             font-weight: 900;
             font-size: 2em;
         }
-
+        
         .scanner {
             border-radius: 50%;
             border-style: solid;
@@ -125,8 +130,15 @@
             border-width: 5px;
             height: 100%;
             width: 100%;
+            z-index: -1;
         }
-
+        
+        .clicked {
+            background-color: #e63946;
+            transition-timing-function: ease-out;
+            transition-duration: 500ms;
+        }
+        
         .circle {
             border-radius: 50%;
             border-style: solid;
@@ -134,7 +146,7 @@
             border-color: #e63946;
             z-index: -1;
         }
-
+        
         .template {
             display: none;
         }
@@ -150,7 +162,7 @@
             font-size: 1.5em;
             color: #fb8500;
         }
-
+        
         #bgimg {
             opacity: 0.5;
             position: fixed;
@@ -161,25 +173,26 @@
             background-position: center;
             z-index: -2;
         }
-
+        
         @media (orientation: landscape) {
             #rotate {
                 display: none;
             }
         }
-
+        
         @media (orientation: portrait) {
             #start {
                 display: none;
             }
-        } 
-
+        }
+        
         @media (prefers-color-scheme: dark) {
             body {
                 color: #D8D8D6;
                 background: #0E0E10;
             }
-            .bordered, .scanner {
+            .bordered,
+            .scanner {
                 border-color: #D8D8D6;
             }
         }
@@ -285,7 +298,7 @@
         let score = {}
         let showTime = 1000
         let prepared = false;
-        (async () => {
+        (async() => {
             let blob = await (await fetch("./cryout.mp3")).blob()
             audio.src = URL.createObjectURL(blob)
             data = (await (await fetch("./cryout.json")).json()).note_list
@@ -295,25 +308,30 @@
             start.style.cursor = "pointer"
             prepared = true
         })()
+
         function start() {
             if (!prepared) return
             document.getElementById("welcome").style.display = "none"
             document.getElementById("main").style.display = "flex"
             draw()
-            if (document.documentElement.requestFullscreen) 
+            if (document.documentElement.requestFullscreen)
                 document.documentElement.requestFullscreen()
-            else if (document.documentElement.webkitRequestFullscreen) 
+            else if (document.documentElement.webkitRequestFullscreen)
                 document.documentElement.webkitRequestFullscreen()
             audio.play()
             setInterval(draw, 50)
         }
         let char_list = ['W', 'A', 'D', 'S', 'I', 'J', 'L', 'K']
+        let count = 0
+        let pressing = {}
+
         function getTime(tick) {
-            return tick /480 / 3 * 1000
+            return tick / 480 / 3 * 1000
         }
+
         function draw() {
             let time = audio.currentTime
-            document.getElementById("timer").innerHTML = 
+            document.getElementById("timer").innerHTML =
                 Math.floor(time / 60) + ":" + Math.floor(time) % 60 + "." + Math.floor(time * 1000) % 1000
             let panel = document.getElementById("panel")
             document.getElementById("left").style.width = panel.clientHeight + "px"
@@ -321,6 +339,12 @@
 
             char_list.forEach(v => {
                 document.getElementById("circle" + v).innerHTML = ""
+                let elem = document.querySelector("#" + v + " > .scanner")
+                if (pressing[v]) {
+                    elem.className = "scanner clicked"
+                } else {
+                    elem.className = "scanner"
+                }
             })
 
             let missCount = 0
@@ -339,10 +363,12 @@
                 if (delta < -500 && v.click === undefined)
                     missCount++
             })
+
             function or0(x) {
                 return x ? x : 0
             }
-            document.getElementById("score").innerHTML = 
+
+            document.getElementById("score").innerHTML =
                 "" + or0(score.Perfect) + " / " +
                 "" + or0(score.Great) + " / " +
                 "" + or0(score.Good) + " / " +
@@ -351,14 +377,17 @@
         }
         char_list.forEach(v => {
             let elem = document.getElementById(v)
-            elem.addEventListener("touchstart", e => down(v), { passive: true })
-            elem.addEventListener("touchend", e => up(v), { passive: true })
+            elem.addEventListener("touchstart", e => down(v), {
+                passive: true
+            })
+            elem.addEventListener("touchend", e => up(v), {
+                passive: true
+            })
         })
-        let count = 0
-        let pressing = {}
+
         function showFeedback(key, str) {
             if (score[str]) score[str]++
-            else score[str] = 1
+                else score[str] = 1
             let elem = document.getElementById("feedback" + key)
             if (elem === null) return
             elem.style.display = "none"
@@ -366,11 +395,14 @@
                 elem.style.opacity = 1
                 elem.innerHTML = str
                 elem.style.display = "block"
-                setTimeout(() => {elem.style.opacity = 0}, 20)
+                setTimeout(() => {
+                    elem.style.opacity = 0
+                }, 20)
             }, 20)
         }
+
         function down(key) {
-            if (key === " ") start() 
+            if (key === " ") start()
             if (pressing[key]) return
             pressing[key] = true
             console.log("down", key, Math.floor(audio.currentTime * 1000), count)
@@ -394,6 +426,7 @@
             else if (Math.abs(minD) < 500) showFeedback(key, "Bad")
             else showFeedback(key, "Miss")
         }
+
         function up(key) {
             console.log("up", key)
             pressing[key] = false
