@@ -377,10 +377,16 @@
         }
         char_list.forEach(v => {
             let elem = document.getElementById(v)
-            elem.addEventListener("touchstart", e => down(v), {
+            elem.addEventListener("touchstart", e => {
+                e.preventDefault()
+                down(v)
+            }, {
                 passive: true
             })
-            elem.addEventListener("touchend", e => up(v), {
+            elem.addEventListener("touchend", e => {
+                e.preventDefault()
+                up(v)
+            }, {
                 passive: true
             })
         })
@@ -431,8 +437,20 @@
             console.log("up", key)
             pressing[key] = false
         }
-        document.onkeydown = e => down(e.key.toUpperCase())
-        document.onkeyup = e => up(e.key.toUpperCase())
+        document.onkeydown = e => {
+            e.preventDefault()
+            down(e.key.toUpperCase())
+        }
+        document.onkeyup = e => {
+            e.preventDefault()
+            up(e.key.toUpperCase())
+        }
+        document.oncontextmenu = e => {
+            e.preventDefault()
+        }
+        document.onselectstart = e => {
+            e.preventDefault()
+        }
     </script>
 </body>
 
