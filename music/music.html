@@ -438,11 +438,9 @@
             pressing[key] = false
         }
         document.onkeydown = e => {
-            e.preventDefault()
             down(e.key.toUpperCase())
         }
         document.onkeyup = e => {
-            e.preventDefault()
             up(e.key.toUpperCase())
         }
         document.oncontextmenu = e => {
