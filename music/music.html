@@ -318,7 +318,11 @@
                 document.documentElement.requestFullscreen()
             else if (document.documentElement.webkitRequestFullscreen)
                 document.documentElement.webkitRequestFullscreen()
-            audio.play()
+            try {
+                audio.play()
+            } catch (e) {
+                alert("浏览器不兼容，请使用新版 Chrome 或 Firefox 游玩")
+            }
             setInterval(draw, 50)
         }
         let char_list = ['W', 'A', 'D', 'S', 'I', 'J', 'L', 'K']
